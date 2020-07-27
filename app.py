@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import jsonify, request
 
 app = Flask(__name__)
 
@@ -20,13 +21,12 @@ storage.update(
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return jsonify({'msg': 'Hello, World!'})
 
 
 @app.route('/users/list/')
 def user_list():
-    username_list = storage.keys()
-    return '<br>'.join(username_list)
+    return jsonify(storage)
 
 
 @app.route('/users/delete/<username>')
@@ -37,3 +37,18 @@ def delete_user(username):
         return f'User {username} was deleted'
     else:
         return 'User doesn`t exist or already deleted'
+
+
+@app.route('/users/add/', methods=["POST"])
+def add_user_list():
+    data = request.get_json()
+    try:
+        username = data['username']
+    except Exception as exp:
+        response = {'msg': f'The field {exp} is required'}
+        username = False
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
